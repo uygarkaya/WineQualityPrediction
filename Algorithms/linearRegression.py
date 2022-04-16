@@ -8,7 +8,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 
 # Read the data
-file_name = '../Dataset/WineQuality.csv'
+file_name = '../Dataset/WineQualityNew.csv'
 dataFrame = pd.read_csv(file_name)
 
 # in df1, we use all the data what we pre-process
@@ -34,26 +34,52 @@ y_test = [Y1_test, Y2_test, Y3_test, Y4_test]
 
 # Use min-max scaler and transform each feature accordingly. 
 # We put each feature value to a certain range (in general (0,1))
-scaler = MinMaxScaler(feature_range=(0,1))
+scaler = []
+for index in range(4):
+    scaler.append(MinMaxScaler(feature_range=(0,1)))
 
 # We should scale the x_train & x_test to make the standardization
 x_train_scaled = []
-for train_data in x_train:
-    train_data = scaler.fit_transform(train_data)
+for train_data_index in range(len(x_train)):
+    train_data = scaler[train_data_index].fit_transform(x_train[train_data_index])
     x_train_scaled.append(train_data)
 
 x_test_scaled = []
-for test_data in x_test:
-    test_data = scaler.transform(test_data)
+for test_data_index in range(len(x_test)):
+    test_data = scaler[test_data_index].transform(x_test[test_data_index])
     x_test_scaled.append(test_data)
 
 # initalize the model
-linearRegression = LinearRegression()
+model = []
+for index in range(4):
+    model.append(LinearRegression())
 
-# # Fit the training data to the model (training)
-# linear_regression = []
-# for index in range(len(x_train_scaled)):
-#     # There is a mistake line 57: Input contains NaN, infinity or a value too large for dtype('float64')     
-#     regression = linearRegression.fit(x_train_scaled[index], y_train[index])
-#     linear_regression.append(regression)
+# Fit the training data to the model (training)
+linear_regression = []
+for index in range(len(x_train_scaled)):     
+    regression = model[index].fit(x_train_scaled[index], y_train[index])
+    linear_regression.append(regression)
 
+# Predict the values by using all test data
+prediction = []
+for index in range(len(linear_regression)):
+    prediction.append(linear_regression[index].predict(x_test_scaled[index]))
+
+# Calculate the score of the model in the test data 
+# We want to desire higher values
+score = []
+for index in range(len(linear_regression)):
+    score.append(linear_regression[index].score(x_test_scaled[index], y_test[index]))
+
+# Printing the each score of the model
+for index, value in enumerate(score):
+    print(f'Score{index+1}: {value}')
+
+# Calculate the mean squared error of the predicted values.
+# We want to get lower values
+mse = []
+for index in range(len(linear_regression)):
+    mse.append(mean_squared_error(y_test[index], prediction[index]))
+
+for index, value in enumerate(mse):
+    print(f'mse{index+1}: {value}')
