@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
 # Read the data
-file_name = 'Dataset/WineQualityNew.csv'
+file_name = 'Dataset/WineQualityDropped_R.csv'
 dataFrame = pd.read_csv(file_name)
 
 # in df1, we use all the data what we pre-process
@@ -19,7 +19,7 @@ df1 = dataFrame[['fixed acidity', 'volatile acidity', 'citric acid', 'residual s
                  'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
                  'pH', 'sulphates', 'alcohol', 'type_red', 'type_white', 'quality']]
 df2 = dataFrame[['alcohol', 'density', 'volatile acidity',
-                 'chlorides', 'citric acid', 'fixed acidity', 'quality']]
+                 'chlorides', 'type_red', 'type_white', 'quality']]
 df3 = dataFrame[['fixed acidity', 'free sulfur dioxide',
                  'total sulfur dioxide', 'sulphates', 'residual sugar', 'pH', 'quality']]
 df4 = dataFrame[['alcohol', 'pH', 'density', 'residual sugar',
