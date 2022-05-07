@@ -1,7 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report
 
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+from sklearn.metrics import classification_report
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -21,7 +23,7 @@ df3 = dataFrame[['fixed acidity', 'free sulfur dioxide',
 df4 = dataFrame[['alcohol', 'pH', 'density', 'residual sugar',
                  'volatile acidity', 'sulphates', 'quality']]
 
-# split the data into training and testing data with using the independent variables(y) and dependent variable(x)
+# Split the data into training and testing data with using the independent variables(y) and dependent variable(x)
 X1_train, X1_test, Y1_train, Y1_test = train_test_split(
     df1.iloc[:, 0:13].values, df1.loc[:, "quality"].values, test_size=0.25, random_state=147)
 X2_train, X2_test, Y2_train, Y2_test = train_test_split(

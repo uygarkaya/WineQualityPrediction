@@ -7,14 +7,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
+
 # Read the data
 file_name = 'Dataset/WineQualityDropped_R.csv'
 dataFrame = pd.read_csv(file_name)
 
-# in df1, we use all the data what we pre-process
-# in df2, we use 6 different dependent variables data with the highest correlation with the independent variable
-# in df3, we use 6 different dependent variables data with the lowest correlation with the independent variable
-# in df4, we use 6 different dependent variables data that have one highest and one lowest correlation with the independent variable
+# In df1, we use all the data what we pre-process
+# In df2, we use 6 different dependent variables data with the highest correlation with the independent variable
+# In df3, we use 6 different dependent variables data with the lowest correlation with the independent variable
+# In df4, we use 6 different dependent variables data that have one highest and one lowest correlation with the independent variable
 df1 = dataFrame[['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
                  'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
                  'pH', 'sulphates', 'alcohol', 'type_red', 'type_white', 'quality']]
@@ -25,7 +26,7 @@ df3 = dataFrame[['fixed acidity', 'free sulfur dioxide',
 df4 = dataFrame[['alcohol', 'pH', 'density', 'residual sugar',
                  'volatile acidity', 'sulphates', 'quality']]
 
-# split the data into training and testing data with using the independent variables(y) and dependent variable(x)
+# Split the data into training and testing data with using the independent variables(y) and dependent variable(x)
 X1_train, X1_test, Y1_train, Y1_test = train_test_split(
     df1.iloc[:, 0:13].values, df1.loc[:, "quality"].values, test_size=0.25, random_state=147)
 X2_train, X2_test, Y2_train, Y2_test = train_test_split(
@@ -59,7 +60,7 @@ for test_data_index in range(len(x_test)):
     test_data = scaler[test_data_index].transform(x_test[test_data_index])
     x_test_scaled.append(test_data)
 
-# initalize the model
+# Initalize the model
 model = []
 for index in range(4):
     model.append(LinearRegression())
