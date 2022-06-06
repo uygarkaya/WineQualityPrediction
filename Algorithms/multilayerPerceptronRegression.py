@@ -90,7 +90,7 @@ input = input.reshape((reshape_input, input_node))
 prediction = model.predict(input)
 
 print('Zero Hidden Layer Prediction:\n', prediction)
-visulize_loss(fit_model, 'Zero Hidden Layer - Fitting Model Loss')
+visulize_loss(fit_model, 'Single Layer Perceptron - Fitting Model Loss')
 visulize_predict_test(y_array, prediction)
 
 for index in range(len(y_array)):
@@ -100,3 +100,37 @@ print('MSE:', mse)
 print('MAE:', mae)
 print('MAPE:', mape)
 print('RMSE:', rmse)
+
+
+# Defining MLP Model for Single Hidden Layer
+batch_size1 = 256
+num_epochs1 = 200
+learning_rate1 = 0.001
+embedding_dim1 = input_node//4 # we can add more neurons
+# dropout_rate = 0.2 or 0.5
+
+model1 = Sequential()
+model1.add(Dense(units = embedding_dim1, activation='relu', input_dim=input_node))
+model1.add(Dense(units = 1))
+opt1 = keras.optimizers.Adam(learning_rate=learning_rate1)
+model1.compile(optimizer=opt1, loss='mape', metrics=['accuracy'])
+model1.summary()
+
+fit_model1 = model1.fit(x_array, y_array, epochs=num_epochs1, batch_size=batch_size1, verbose=2)
+
+# Predict the future value
+input1 = x_array
+input1 = input1.reshape((reshape_input, input_node))
+prediction1 = model1.predict(input1)
+
+visulize_loss(fit_model1, '1 Hidden Layer Perceptron - Fitting Model Loss')
+visulize_predict_test(y_array, prediction1)
+print('First Hidden Layer Prediction:\n', prediction1)
+
+for index in range(len(y_array)):
+  mse1, mae1, mape1, rmse1 = calculate_error(y_array, prediction1)
+
+print('MSE1:', mse1)
+print('MAE1:', mae1)
+print('MAPE1:', mape1)
+print('RMSE1:', rmse1)
