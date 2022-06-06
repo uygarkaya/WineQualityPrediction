@@ -134,3 +134,39 @@ print('MSE1:', mse1)
 print('MAE1:', mae1)
 print('MAPE1:', mape1)
 print('RMSE1:', rmse1)
+
+
+# Defining MLP Model for Two Hidden Layer
+batch_size2 = 256
+num_epochs2 = 200
+learning_rate2 = 0.001
+embedding_dim2_1 = input_node//4 # we can arrenge neurons
+embedding_dim2_2 = embedding_dim2_1//2 # we can arrenge neurons
+# dropout_rate = 0.2 or 0.5
+
+model2 = Sequential()
+model2.add(Dense(units = embedding_dim2_1, activation='relu', input_dim=input_node))
+model2.add(Dense(units = embedding_dim2_2, activation='relu', input_dim=embedding_dim2_1))
+model2.add(Dense(units = 1))
+opt2 = keras.optimizers.Adam(learning_rate=learning_rate2)
+model2.compile(optimizer=opt2, loss='mape', metrics=['accuracy'])
+model2.summary()
+
+fit_model2 = model2.fit(x_array, y_array, epochs=num_epochs2, batch_size=batch_size2, verbose=2)
+
+# Predict the future value
+input2 = x_array
+input2 = input2.reshape((reshape_input, input_node))
+prediction2 = model2.predict(input2)
+
+visulize_loss(fit_model2, '2 Hidden Layer Perceptron - Fitting Model Loss')
+visulize_predict_test(y_array, prediction2)
+print('Second Hidden Layer Prediction:\n', prediction2)
+
+for index in range(len(y_array)):
+  mse2, mae2, mape2, rmse2 = calculate_error(y_array, prediction2)
+
+print('MSE2:', mse2)
+print('MAE2:', mae2)
+print('MAPE2:', mape2)
+print('RMSE2:', rmse2)
