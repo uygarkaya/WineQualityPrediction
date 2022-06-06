@@ -9,7 +9,7 @@ from sklearn.metrics import mean_absolute_error
 
 
 # Read the data
-file_name = 'Dataset/WineQualityDropped_R.csv'
+file_name = '../Dataset/WineQualityNew_R.csv'
 dataFrame = pd.read_csv(file_name)
 
 # In df1, we use all the data what we pre-process

@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 
 
 # Read the data
-file_name = 'Dataset/WineQualityDropped_C.csv'
+file_name = '../Dataset/WineQualityNew_C.csv'
 dataFrame = pd.read_csv(file_name)
 
 df1 = dataFrame[['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
