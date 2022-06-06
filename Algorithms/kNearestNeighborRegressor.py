@@ -1,16 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.metrics import classification_report
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsRegressor, kneighbors_graph
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
 
-
-# Read the data
-file_name = '../Dataset/WineQualityDropped_C.csv'
+file_name = '../Dataset/WineQualityNew_R.csv'
 dataFrame = pd.read_csv(file_name)
 
 df1 = dataFrame[['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
@@ -23,7 +20,6 @@ df3 = dataFrame[['fixed acidity', 'free sulfur dioxide',
 df4 = dataFrame[['alcohol', 'pH', 'density', 'residual sugar',
                  'volatile acidity', 'sulphates', 'quality']]
 
-# Split the data into training and testing data with using the independent variables(y) and dependent variable(x)
 X1_train, X1_test, Y1_train, Y1_test = train_test_split(
     df1.iloc[:, 0:13].values, df1.loc[:, "quality"].values, test_size=0.25, random_state=147)
 X2_train, X2_test, Y2_train, Y2_test = train_test_split(
@@ -41,7 +37,7 @@ y_test = [Y1_test, Y2_test, Y3_test, Y4_test]
 
 scaler = []
 for index in range(4):
-    scaler.append(StandardScaler())
+    scaler.append(MinMaxScaler(feature_range=(0, 1)))
 
 x_train_scaled = []
 for train_data_index in range(len(x_train)):
@@ -56,30 +52,52 @@ for test_data_index in range(len(x_test)):
 
 model = []
 for index in range(4):
-    model.append(LogisticRegression(C=1))
+    model.append(KNeighborsRegressor(n_neighbors=5))
 
-logistic_regression = []
+kneighbors_regressor = []
 for index in range(len(x_train_scaled)):
-    classification = model[index].fit(x_train_scaled[index], y_train[index])
-    logistic_regression.append(classification)
+    regression = model[index].fit(x_train_scaled[index], y_train[index])
+    kneighbors_regressor.append(regression)
 
 prediction = []
-for index in range(len(logistic_regression)):
-    prediction.append(logistic_regression[index].predict(x_test_scaled[index]))
+for index in range(len(kneighbors_regressor)):
+    prediction.append(kneighbors_regressor[index].predict(x_test_scaled[index]))
 
-accuracy = []
-for index in range(len(logistic_regression)):
-    accuracy.append(logistic_regression[index].score(
+score = []
+for index in range(len(kneighbors_regressor)):
+    score.append(kneighbors_regressor[index].score(
         x_test_scaled[index], y_test[index]))
 
-# Printing the each score of the model
-for index, value in enumerate(accuracy):
-    print(f'accuracy {index+1}: {value}')
+for index, value in enumerate(score):
+    print(f'score{index+1}: {value}')
 
-for index, (prediction, y_t) in enumerate(zip(prediction, y_test)):
-    cm = confusion_matrix(y_t, prediction, labels=[0, 1, 2])
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                                  display_labels=["Low", "Medium", "High"])
-    disp.plot()
+
+def calculate_error_rate(kneighbors_regressor, y_test, prediction):
+    mse = []
+    for index in range(len(kneighbors_regressor)):
+        mse.append(mean_squared_error(y_test[index], prediction[index]))
+
+    mae = []
+    for index in range(len(kneighbors_regressor)):
+        mae.append(mean_absolute_error(y_test[index], prediction[index]))
+
+    return mse, mae
+
+mse, mae = calculate_error_rate(kneighbors_regressor, y_test, prediction)
+for index, value in enumerate(mse):
+    print(f'MSE{index+1}: {value}')
+for index, value in enumerate(mae):
+    print(f'MAE{index+1}: {value}')
+
+
+def visulize_error_rate(x_label, y_label, models, error_rate):
+    plt.xlabel(x_label, fontweight="bold", style="italic")
+    plt.ylabel(y_label, fontweight="bold", style="italic")
+    plt.scatter(models, error_rate, s=75, marker='o', color='b')
     plt.show()
-    print(f"CR of model{index+1}:\n", classification_report(y_t, prediction))
+
+
+visulize_error_rate('Models', 'Mean Squared Error', [
+                    "M{}".format(index+1) for index in range(4)], mse)
+visulize_error_rate('Models', 'Mean Absolute Error', [
+                    "M{}".format(index+1) for index in range(4)], mae)
