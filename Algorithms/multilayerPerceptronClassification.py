@@ -1,34 +1,36 @@
 import pandas as pd
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+from sklearn.metrics import classification_report
+from sklearn.linear_model import LogisticRegression
 from tensorflow import keras
 import tensorflow_addons as tfa
-from sklearn.neural_network import MLPRegressor
+from sklearn.neural_network import MLPClassifier
 import matplotlib.pyplot as plt
 
 learning_rate = 0.005
 
 # Read the data
-file_name = '../Dataset/WineQualityNew_R.csv'
+file_name = '../Dataset/WineQualityNew_C.csv'
 dataFrame = pd.read_csv(file_name)
 
-df = dataFrame[['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
-                'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
-                'pH', 'sulphates', 'alcohol', 'type_red', 'type_white', 'quality']]
+df1 = dataFrame[['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
+                 'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
+                 'pH', 'sulphates', 'alcohol', 'type_red', 'type_white', 'quality']]
 
 # Split the data into training and testing data with using the independent variables(y) and dependent variable(x)
 X_train, X_test, Y_train, Y_test = train_test_split(
-    df.iloc[:, 0:13].values, df.loc[:, "quality"].values, test_size=0.25, random_state=147)
+    df1.iloc[:, 0:13].values, df1.loc[:, "quality"].values, test_size=0.25, random_state=147)
 
-scaler = MinMaxScaler(feature_range=(0, 1))
+scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 models = []
-models.append(MLPRegressor(random_state=1, max_iter=500))
+models.append(MLPClassifier(random_state=1, max_iter=300))
 
 # slp = keras.models.Sequential()
 # slp.add(keras.layers.Dense(units=3, input_dim=13, activation='sigmoid'))
@@ -71,38 +73,12 @@ for index in range(len(models)):
 for index, value in enumerate(accuracy):
     print(f'accuracy {index+1}: {value}')
 
-
-def calculate_error_rate(models, y_test, prediction):
-    # Calculate the mean squared error
-    mse = []
-    for index in range(len(models)):
-        mse.append(mean_squared_error(y_test, prediction[index]))
-
-    # Calculate the mean absolute error
-    mae = []
-    for index in range(len(models)):
-        mae.append(mean_absolute_error(y_test, prediction[index]))
-
-    return mse, mae
-
-
-# Printing the each error metrics of the model
-mse, mae = calculate_error_rate(models, Y_test, prediction)
-for index, value in enumerate(mse):
-    print(f'MSE{index+1}: {value}')
-for index, value in enumerate(mae):
-    print(f'MAE{index+1}: {value}')
-
-
-def visulize_error_rate(x_label, y_label, models, error_rate):
-    # Visulize the error rate
-    plt.xlabel(x_label, fontweight="bold", style="italic")
-    plt.ylabel(y_label, fontweight="bold", style="italic")
-    plt.scatter(models, error_rate, s=75, marker='o', color='b')
+for index, prediction in enumerate(prediction):
+    cm = confusion_matrix(Y_test, prediction, labels=[0, 1, 2])
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+                                  display_labels=["Low", "Medium", "High"])
+    print(cm)
+    disp.plot()
     plt.show()
-
-
-visulize_error_rate('Models', 'Mean Squared Error', [
-                    "M{}".format(index+1) for index in range(4)], mse)
-visulize_error_rate('Models', 'Mean Absolute Error', [
-                    "M{}".format(index+1) for index in range(4)], mae)
+    print(f"CR of models{index+1}:\n",
+          classification_report(Y_test, prediction))
