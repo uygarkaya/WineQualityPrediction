@@ -1,15 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import classification_report
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
 
+from sklearn.neighbors import KNeighborsClassifier
 
-# Read the data
 file_name = '../Dataset/WineQualityNew_C.csv'
 dataFrame = pd.read_csv(file_name)
 
@@ -23,7 +22,6 @@ df3 = dataFrame[['fixed acidity', 'free sulfur dioxide',
 df4 = dataFrame[['alcohol', 'pH', 'density', 'residual sugar',
                  'volatile acidity', 'sulphates', 'quality']]
 
-# Split the data into training and testing data with using the independent variables(y) and dependent variable(x)
 X1_train, X1_test, Y1_train, Y1_test = train_test_split(
     df1.iloc[:, 0:13].values, df1.loc[:, "quality"].values, test_size=0.25, random_state=147)
 X2_train, X2_test, Y2_train, Y2_test = train_test_split(
@@ -54,22 +52,35 @@ for test_data_index in range(len(x_test)):
     test_data = scaler[test_data_index].transform(x_test[test_data_index])
     x_test_scaled.append(test_data)
 
-model = []
-for index in range(4):
-    model.append(LogisticRegression(C=1))
+def pca(data, n_components=6):
+    pca = PCA(n_components=n_components)
+    pca.fit(data)
+    return pca
 
-logistic_regression = []
+x_pca = pca(x_train_scaled[0])
+print('Explained variance ratio: ', x_pca.explained_variance_ratio_)
+
+x_train_scaled.append(x_pca.transform(x_train_scaled[0]))
+x_test_scaled.append(x_pca.transform(x_test_scaled[0]))
+y_train.append(y_train[0])
+y_test.append(y_test[0])
+
+model = []
+for index in range(len(x_train_scaled)):
+    model.append(KNeighborsClassifier(n_neighbors=5))
+
+kneighbors_classifier = []
 for index in range(len(x_train_scaled)):
     classification = model[index].fit(x_train_scaled[index], y_train[index])
-    logistic_regression.append(classification)
+    kneighbors_classifier.append(classification)
 
 prediction = []
-for index in range(len(logistic_regression)):
-    prediction.append(logistic_regression[index].predict(x_test_scaled[index]))
+for index in range(len(kneighbors_classifier)):
+    prediction.append(kneighbors_classifier[index].predict(x_test_scaled[index]))
 
 accuracy = []
-for index in range(len(logistic_regression)):
-    accuracy.append(logistic_regression[index].score(
+for index in range(len(kneighbors_classifier)):
+    accuracy.append(kneighbors_classifier[index].score(
         x_test_scaled[index], y_test[index]))
 
 # Printing the each score of the model
@@ -83,3 +94,4 @@ for index, (prediction, y_t) in enumerate(zip(prediction, y_test)):
     disp.plot()
     plt.show()
     print(f"CR of model{index+1}:\n", classification_report(y_t, prediction))
+
