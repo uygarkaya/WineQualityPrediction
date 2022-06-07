@@ -78,6 +78,7 @@ for index, value in enumerate(accuracy):
 
 for index, (prediction, y_t) in enumerate(zip(prediction, y_test)):
     cm = confusion_matrix(y_t, prediction, labels=[0, 1, 2])
+    print(cm)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                                   display_labels=["Low", "Medium", "High"])
     disp.plot()

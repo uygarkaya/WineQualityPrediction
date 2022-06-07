@@ -52,10 +52,12 @@ for test_data_index in range(len(x_test)):
     test_data = scaler[test_data_index].transform(x_test[test_data_index])
     x_test_scaled.append(test_data)
 
+
 def pca(data, n_components=6):
     pca = PCA(n_components=n_components)
     pca.fit(data)
     return pca
+
 
 x_pca = pca(x_train_scaled[0])
 print('Explained variance ratio: ', x_pca.explained_variance_ratio_)
@@ -76,7 +78,8 @@ for index in range(len(x_train_scaled)):
 
 prediction = []
 for index in range(len(kneighbors_classifier)):
-    prediction.append(kneighbors_classifier[index].predict(x_test_scaled[index]))
+    prediction.append(
+        kneighbors_classifier[index].predict(x_test_scaled[index]))
 
 accuracy = []
 for index in range(len(kneighbors_classifier)):
@@ -89,9 +92,9 @@ for index, value in enumerate(accuracy):
 
 for index, (prediction, y_t) in enumerate(zip(prediction, y_test)):
     cm = confusion_matrix(y_t, prediction, labels=[0, 1, 2])
+    print(cm)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                                   display_labels=["Low", "Medium", "High"])
     disp.plot()
     plt.show()
     print(f"CR of model{index+1}:\n", classification_report(y_t, prediction))
-

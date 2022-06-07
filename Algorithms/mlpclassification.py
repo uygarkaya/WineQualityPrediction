@@ -56,7 +56,7 @@ for test_data_index in range(len(x_test)):
 
 model = []
 for index in range(4):
-    model.append(MLPClassifier(random_state=1, max_iter=300))
+    model.append(MLPClassifier(random_state=1, max_iter=1000))
 
 logistic_regression = []
 for index in range(len(x_train_scaled)):

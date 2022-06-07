@@ -66,21 +66,22 @@ for index in range(4):
     model.append(MLPRegressor(random_state=1, max_iter=500))
 
 # Fit the training data to the model (training)
-linear_regression = []
+mlp_regressor_models = []
 for index in range(len(x_train_scaled)):
     regression = model[index].fit(x_train_scaled[index], y_train[index])
-    linear_regression.append(regression)
+    mlp_regressor_models.append(regression)
 
 # Predict the values by using all test data
 prediction = []
-for index in range(len(linear_regression)):
-    prediction.append(linear_regression[index].predict(x_test_scaled[index]))
+for index in range(len(mlp_regressor_models)):
+    prediction.append(
+        mlp_regressor_models[index].predict(x_test_scaled[index]))
 
 # Calculate the score of the model in the test data
 # We want to desire higher values
 score = []
-for index in range(len(linear_regression)):
-    score.append(linear_regression[index].score(
+for index in range(len(mlp_regressor_models)):
+    score.append(mlp_regressor_models[index].score(
         x_test_scaled[index], y_test[index]))
 
 # Printing the each score of the model
@@ -88,22 +89,22 @@ for index, value in enumerate(score):
     print(f'score{index+1}: {value}')
 
 
-def calculate_error_rate(linear_regression, y_test, prediction):
+def calculate_error_rate(mlp_regressor_models, y_test, prediction):
     # Calculate the mean squared error
     mse = []
-    for index in range(len(linear_regression)):
+    for index in range(len(mlp_regressor_models)):
         mse.append(mean_squared_error(y_test[index], prediction[index]))
 
     # Calculate the mean absolute error
     mae = []
-    for index in range(len(linear_regression)):
+    for index in range(len(mlp_regressor_models)):
         mae.append(mean_absolute_error(y_test[index], prediction[index]))
 
     return mse, mae
 
 
 # Printing the each error metrics of the model
-mse, mae = calculate_error_rate(linear_regression, y_test, prediction)
+mse, mae = calculate_error_rate(mlp_regressor_models, y_test, prediction)
 for index, value in enumerate(mse):
     print(f'MSE{index+1}: {value}')
 for index, value in enumerate(mae):
